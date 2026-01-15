@@ -35,6 +35,9 @@ function TaskList({ onEdit }) {
       const data = await response.json();
       // Ensure priority defaults to P3 when not provided by backend
       const normalized = data.map(t => ({ ...t, priority: t.priority || 'P3' }));
+      // debug: log normalized tasks returned from API
+      // eslint-disable-next-line no-console
+      console.debug('TaskList fetched tasks:', normalized);
       setTasks(normalized);
       setError(null);
     } catch (err) {
@@ -231,16 +234,16 @@ function TaskList({ onEdit }) {
                   P3: { bg: '#9e9e9e', color: 'white' }  // gray
                 };
                 const style = colorMap[p] || colorMap.P3;
+                const isSelected = p !== 'P3';
                 return (
                   <Chip
                     label={p}
                     size="small"
+                    className={`priority-badge ${isSelected ? 'selected' : 'unselected'}`}
                     sx={{
                       height: 20,
                       fontSize: '0.7rem',
-                      fontWeight: 600,
-                      background: style.bg,
-                      color: style.color
+                      fontWeight: 600
                     }}
                   />
                 );

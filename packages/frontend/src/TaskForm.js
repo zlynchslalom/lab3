@@ -49,7 +49,11 @@ function TaskForm({ onSave, initialTask }) {
     setError(null);
     // Ensure priority is valid
     const validPriority = ['P1', 'P2', 'P3'].includes(priority) ? priority : 'P3';
-    await onSave({ title, description, due_date: dueDate, priority: validPriority });
+    const payload = { title, description, due_date: dueDate, priority: validPriority };
+    // debug: log the payload being sent
+    // eslint-disable-next-line no-console
+    console.debug('TaskForm submitting payload:', payload);
+    await onSave(payload);
     setTitle('');
     setDescription('');
     setDueDate('');
