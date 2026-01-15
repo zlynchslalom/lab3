@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Paper, Typography, Box } from '@mui/material';
+import { TextField, Button, Paper, Typography, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 
@@ -7,6 +7,7 @@ function TaskForm({ onSave, initialTask }) {
   const [title, setTitle] = useState(initialTask?.title || '');
   const [description, setDescription] = useState(initialTask?.description || '');
   const [dueDate, setDueDate] = useState(initialTask?.due_date || '');
+  const [priority, setPriority] = useState(initialTask?.priority || 'P3');
   const [error, setError] = useState(null);
 
   // Helper to normalize date string to YYYY-MM-DD format
@@ -30,10 +31,12 @@ function TaskForm({ onSave, initialTask }) {
       setTitle(initialTask.title || '');
       setDescription(initialTask.description || '');
       setDueDate(normalizeDateString(initialTask.due_date));
+      setPriority(initialTask.priority || 'P3');
     } else {
       setTitle('');
       setDescription('');
       setDueDate('');
+      setPriority('P3');
     }
   }, [initialTask]);
 
@@ -44,10 +47,13 @@ function TaskForm({ onSave, initialTask }) {
       return;
     }
     setError(null);
-    await onSave({ title, description, due_date: dueDate });
+    // Ensure priority is valid
+    const validPriority = ['P1', 'P2', 'P3'].includes(priority) ? priority : 'P3';
+    await onSave({ title, description, due_date: dueDate, priority: validPriority });
     setTitle('');
     setDescription('');
     setDueDate('');
+    setPriority('P3');
   };
 
   return (
@@ -143,6 +149,22 @@ function TaskForm({ onSave, initialTask }) {
             }
           }}
         />
+
+        <FormControl fullWidth size="small">
+          <InputLabel id="priority-label">Priority</InputLabel>
+          <Select
+            labelId="priority-label"
+            id="priority-select"
+            value={priority}
+            label="Priority"
+            onChange={(e) => setPriority(e.target.value)}
+            inputProps={{ 'data-testid': 'priority-select' }}
+          >
+            <MenuItem value={'P1'}>P1 - High</MenuItem>
+            <MenuItem value={'P2'}>P2 - Medium</MenuItem>
+            <MenuItem value={'P3'}>P3 - Low</MenuItem>
+          </Select>
+        </FormControl>
         {error && <Typography color="error" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>{error}</Typography>}
         <Box display="flex" gap={2}>
           <Button 

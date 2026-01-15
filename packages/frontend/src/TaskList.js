@@ -33,7 +33,9 @@ function TaskList({ onEdit }) {
       const response = await fetch('/api/tasks');
       if (!response.ok) throw new Error('Failed to fetch tasks');
       const data = await response.json();
-      setTasks(data);
+      // Ensure priority defaults to P3 when not provided by backend
+      const normalized = data.map(t => ({ ...t, priority: t.priority || 'P3' }));
+      setTasks(normalized);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -220,6 +222,29 @@ function TaskList({ onEdit }) {
                   }}
                 />
               )}
+              {/* Priority badge */}
+              {(() => {
+                const p = task.priority || 'P3';
+                const colorMap = {
+                  P1: { bg: '#d32f2f', color: 'white' }, // red
+                  P2: { bg: '#ff9800', color: 'white' }, // orange
+                  P3: { bg: '#9e9e9e', color: 'white' }  // gray
+                };
+                const style = colorMap[p] || colorMap.P3;
+                return (
+                  <Chip
+                    label={p}
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      background: style.bg,
+                      color: style.color
+                    }}
+                  />
+                );
+              })()}
               <Box 
                 sx={{ 
                   display: 'flex', 
